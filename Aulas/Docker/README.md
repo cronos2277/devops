@@ -1,4 +1,177 @@
 # Docker
+## Resumo dos comandos
+
+### docker image COMMAND
+  `build`    **=>**   Constrói uma imagem apartir de um Dockerfile
+
+  `history`  **=>**   Mostra o histórico de uma imagem
+
+  `import`   **=>**   Importa o conteúdo de um tarball para criar uma imagem do sistema de arquivos
+
+  `inspect`  **=>**   Exibaeinformações detalhadas sobre uma ou mais imagens
+
+  `load`     **=>**   Carrega uma imagem de um arquivo tar ou STDIN
+
+  `ls`       **=>**   Lista imagens
+
+  `prune`    **=>**   Remove imagens não usadas
+
+  `pull`     **=>**   Receba a imagem ou repositório de um registro
+
+  `push`     **=>**   Envie uma imagem ou repositório para um registro
+
+  `rm`       **=>**   Remove um ou mais imagens
+
+  `save`     **=>**   Salve uma ou mais imagens em um arquivo tar (transmitido para STDOUT por padrão)
+
+  `tag`      **=>**   Crie uma tag TARGET_IMAGE que se refira a SOURCE_IMAGE
+
+### docker container COMMAND
+  `attach`    **=>**  Anexe entrada, saída e fluxos de erro padrão locais a um contêiner em execução
+
+  `commit`    **=>**  Crie uma nova imagem a partir das alterações de um contêiner
+
+  `cp     `   **=>**  Copie arquivos / pastas entre um contêiner e o sistema de arquivos local
+
+  `create `   **=>**  Crie um novo contêiner
+
+  `diff   `   **=>**  Inspecione alterações em arquivos ou diretórios no sistema de arquivos de um contêiner
+
+  `exec   `   **=>**  Execute um comando em um contêiner em execução
+
+  `export `   **=>**  Exporte o sistema de arquivos de um contêiner como um arquivo tar
+
+  `inspect`   **=>**  Exiba informações detalhadas sobre um ou mais contêineres
+
+  `kill   `   **=>**  Mate um ou mais contêineres em execução
+
+  `logs   `   **=>**  Busque os registros de um contêiner
+
+  `ls     `   **=>**  liste containers
+
+  `pause  `   **=>**  Pause todos os processos em um ou mais contêineres
+
+  `port   `   **=>**  Listar mapeamentos de portas ou um mapeamento específico para o contêiner
+
+  `prune  `   **=>**  Remova todos os contêineres parados
+
+  `rename `   **=>**  Renomear um contêiner
+
+  `restart`   **=>**  Reinicie um ou mais contêineres
+
+  `rm     `   **=>**  Remova um ou mais recipientes
+
+  `run    `   **=>**  Execute um comando em um novo contêiner
+
+  `start  `   **=>**  Inicie um ou mais contêineres parados
+
+  `stats  `   **=>**  Exiba uma transmissão ao vivo de estatísticas de uso de recursos de contêineres
+
+  `stop   `   **=>**  Pare um ou mais contêineres em execução
+
+  `top    `   **=>**  Exiba os processos em execução de um contêiner
+
+  `unpause`   **=>**  Retome todos os processos em um ou mais contêineres
+
+  `update `   **=>**  Atualize configuração de um ou mais contêineres
+
+  `wait   `   **=>** Bloqueie até que um ou mais contêineres parem e imprima seus códigos de saída
+
+### docker volume COMMAND
+  
+  `create `   **=>**  Crie um volume
+  
+  `inspect`   **=>**  Exiba informações detalhadas em um ou mais volumes
+  
+  `ls     `   **=>**  liste de volumes
+  
+  `prune  `   **=>**  Remova todos os volumes locais não utilizados
+  
+  `rm     `   **=>**  Remova um ou mais volumes
+
+
+### docker COMMAND
+#### Sintaxe Antiga
+  `attach `   **=>**  Anexe entrada, saída e fluxos de erro padrão locais a um contêiner em execução
+
+  `build  `   **=>**  Construa uma imagem de um Dockerfile
+
+  `commit `   **=>**  Crie uma nova imagem a partir das alterações de um contêiner
+
+  `cp     `   **=>**  Copie arquivos / pastas entre um contêiner e o sistema de arquivos local
+
+  `create `   **=>**  Crie um novo contêiner
+
+  `diff   `   **=>**  Inspecione alterações em arquivos ou diretórios no sistema de arquivos de um contêiner
+
+  `events `   **=>**  Obtenha eventos em tempo real do servidor
+
+  `exec   `   **=>**  Execute um comando em um contêiner em execução
+
+  `export `   **=>**  Exporte o sistema de arquivos de um contêiner como um arquivo tar
+
+  `history`   **=>**  Mostra a história de uma imagem
+
+  `images `   **=>**  Listar imagens
+
+  `import `   **=>**  Importe o conteúdo de um tarball para criar uma imagem do sistema de arquivos
+
+  `info   `   **=>**  Exibir informações de todo o sistema
+
+  `inspect`   **=>**  Retorne informações de baixo nível sobre objetos Docker
+
+  `kill   `   **=>**  Mate um ou mais contêineres em execução
+
+  `load   `   **=>**  Carregar uma imagem de um arquivo tar ou STDIN
+
+  `login  `   **=>**  Faça login em um registro do Docker
+
+  `logout `   **=>**  Saia de um registro do Docker
+
+  `logs   `   **=>**  Busque os registros de um contêiner
+
+  `pause  `   **=>**  Pause todos os processos em um ou mais contêineres
+
+  `port   `   **=>**  Listar mapeamentos de portas ou um mapeamento específico para o contêiner
+
+  `ps     `   **=>**  Contêineres de lista
+
+  `pull   `   **=>**  Puxe uma imagem ou repositório de um registro
+
+  `push   `   **=>**  Envie uma imagem ou repositório para um registro
+
+  `rename `   **=>**  Renomear um contêiner
+
+  `restart`   **=>**  Reinicie um ou mais contêineres
+
+  `rm     `   **=>**  Remova um ou mais containers
+
+  `rmi    `   **=>**  Remova uma ou mais imagens
+
+  `run    `   **=>**  Execute um comando em um novo contêiner
+
+  `save   `   **=>**  Salve uma ou mais imagens em um arquivo tar (transmitido para STDOUT por padrão)
+
+  `search `   **=>**  Pesquise imagens no Docker Hub
+
+  `start  `   **=>**  Inicie um ou mais contêineres parados
+
+  `stats  `   **=>**  Exibir uma transmissão ao vivo de estatísticas de uso de recursos de contêineres
+
+  `stop   `   **=>**  Pare um ou mais contêineres em execução
+
+  `tag    `   **=>**  Crie uma tag TARGET_IMAGE que se refira a SOURCE_IMAGE
+
+  `top    `   **=>**  Exibir os processos em execução de um contêiner
+
+  `unpause`   **=>**  Retome todos os processos em um ou mais contêineres
+
+  `update `   **=>**  Atualizar configuração de um ou mais contêineres
+
+  `version`   **=>**  Mostra as informações da versão do Docker
+
+  `wait   `   **=>**  Bloqueie até que um ou mais contêineres parem e imprima seus códigos de saída
+
 
 ## Explicando os principais comandos
 Todos os comandos do docker tem o `docker` no começo e o que vem depois é justamente esse comando deve estar na frente de qualquer comando.
