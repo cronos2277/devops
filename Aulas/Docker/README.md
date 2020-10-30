@@ -222,3 +222,44 @@ Mostra todas as maquinas ativas por padrão, se usado com a flag `-a` mostra tod
 
 ### docker rm
 Esse comando serve para excluir uma imagem ou container, se for usar o comando sem especificar se é container ou imagem, se faz necessário usar o hash para isso, pode ser uma ou mais imagem separados por um espaço.
+
+### docker login
+Faça login em um registro do Docker ou back-end em nuvem.
+Se nenhum servidor de registro for especificado, o padrão será definido pelo daemon.
+#### Preparando a imagem para o upload
+A imagem precisa de uma tag, você pode criar da seguinte forma `docker build -t <hub-user>/<repo-name>[:<tag>]`:
+
+`<hub-user>` => Aqui você informa o nome de usuário.
+
+`<repo-name>` => Aqui coloca o nome do repositório criado lá no serviço online, no caso aqui o docker hub
+
+`[:<tag>]` => A tag a ser informada.
+
+##### Exemplo para o diretório teste da conta cronos2277:  
+    docker image build -t cronos2277/teste:1.0 .
+
+##### Caso a imagem já exista:
+    docker tag <existing-image> <hub-user>/<repo-name>[:<tag>]
+
+#### Depois de executado o passo acima, ai pode prosseguir
+    docker push <hub-user>/<repo-name>:<tag>
+
+#### Uso:
+  docker login [OPTIONS] [SERVER] [flags]
+  docker login [command]
+  
+#### Comandos disponíveis:
+  azure       Faça login no azure
+
+Flags:
+  -h, --help              ajuda para login
+  -p, --password string   senha
+      --password-stdin    Pegue a senha de stdin
+  -u, --username string   nome do usuário
+
+Flags Globais:
+      --config DIRECTORY   Localização dos arquivos de configuração do cliente DIRETÓRIO (padrão "C: \\ Usuários \\ crono \\. Docker")
+  -c, --context string     contexto
+  -D, --debug              habilitar saída de depuração nos logs
+  -H, --host string        Soquete (s) daemon para conectar
+
