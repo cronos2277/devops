@@ -251,15 +251,23 @@ A imagem precisa de uma tag, você pode criar da seguinte forma `docker build -t
 #### Comandos disponíveis:
   azure       Faça login no azure
 
-Flags:
-  -h, --help              ajuda para login
-  -p, --password string   senha
-      --password-stdin    Pegue a senha de stdin
-  -u, --username string   nome do usuário
+##### Flags:
 
-Flags Globais:
-      --config DIRECTORY   Localização dos arquivos de configuração do cliente DIRETÓRIO (padrão "C: \\ Usuários \\ crono \\. Docker")
-  -c, --context string     contexto
-  -D, --debug              habilitar saída de depuração nos logs
-  -H, --host string        Soquete (s) daemon para conectar
+  **-h, --help**       *=>*       ajuda para login
+
+  **-p, --password string**  *=>* senha
+
+  **--password-stdin**  *=>*  Pegue a senha de stdin
+
+  **-u, --username string**  *=>*  nome do usuário
+
+##### Flags Globais:
+
+  **--config DIRECTORY**   *=>* Localização dos arquivos de configuração do cliente DIRETÓRIO (padrão "C: \\ Usuários \\ crono \\. Docker")
+
+  **-c, --context string**  *=>*   contexto
+
+  **-D, --debug**      *=>*        habilitar saída de depuração nos logs
+
+  **-H, --host string**    *=>*    Soquete (s) daemon para conectar
 
