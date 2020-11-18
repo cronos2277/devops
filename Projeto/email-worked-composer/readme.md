@@ -15,3 +15,6 @@ no teminal digite `docker-compose up -d`
 `db` => nome do serviço definido dentro do [docker-compose](docker-compose.yml)
 
 `psql -U postgres -c '\l'` => comando CLI do PostGresSQL.
+
+## Encerrando
+use o comando `docker-compose down` para que todos os containers em execução sejam paralizados, repare que os comandos tem em sua composição a palavra **compose** e não **composer**, cuidado com o r para não errar o comando.

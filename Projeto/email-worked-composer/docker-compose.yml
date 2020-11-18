@@ -2,3 +2,6 @@ version: '3'
 services:
   db:
     image: postgres:latest
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123456
