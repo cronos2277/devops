@@ -1,0 +1,8 @@
+CREATE DATABASE envios;
+\c envios
+CREATE TABLE emails(
+    codigo SERIAL NOT NULL,
+    registro TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    assunto VARCHAR(100) NOT NULL,
+    mensagem VARCHAR(250) NOT NULL
+);
