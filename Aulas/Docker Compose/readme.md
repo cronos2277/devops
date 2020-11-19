@@ -106,3 +106,42 @@ Como pode-se perceber tem um segundo serviço agora que no caso é o front-end:
             - 80:80
 
 Nesse exemplo foi especificado uma versão de maneira fixa, no caso `nginx:1.13`, foi mapeado a pasta web a pasta html do container e além disso especificado uma porta, lembrando sempre que a esquerda está a porta do hospedeiro e a direita a do container, no caso a porta **80** da maquina mapeada a porta **80** do container. Seja para mapeamento de volume, ou porta como é o caso, sempre a esquerda dos dois pontos se refere a maquina e a parte direita a parte referente ao container, no caso a porta 80 da maquina mapeada para a porta 80 do container. Além disso qualquer alteração na pasta web, caso o container rode no modo deamon, será imediatamente percebido.
+
+## Lendo e processando arquivos externos
+
+    version: '3'
+    volumes:
+        dados:
+    services:
+    db:
+        image: postgres:9.6
+        environment:
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: 123456 
+            PGDATA: /tmp                 
+        volumes:      
+          - dados:/var/lib/postgresql/data
+          - ./sql:/scripts
+          - ./sql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    frontend:
+        image: nginx:1.13
+        volumes:
+          - ./web:/usr/share/nginx/html
+        ports:
+          - 80:80
+    app:
+        image: python:3.6
+        volumes:
+          - ./app:/app
+        working_dir: /app
+        command: bash ./app.sh
+        ports:
+          - 8080:8080
+
+A grande diferença está no `working_dir` e `command`, ambos trabalham em conjunto.
+
+### working_dir
+Aqui o diretório de trabalho, ou seja o diretório ao qual irá alimentar o container, nesse exemplo seria o código que a imagem do Python deve executar.
+
+### command
+Aqui você especifica o comando a ser executado, lembrando que ele executa um comando de uma working_dir definida, logo esse trabalha em conjunto com a working dir, no caso foi carregado a pasta app como working_dir e dentro desta pasta executado o arquivo de script.
