@@ -6,7 +6,8 @@ services:
     image: postgres:9.6
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 123456
+      POSTGRES_PASSWORD: 123456 
+      PGDATA: /tmp                 
     volumes:      
       - dados:/var/lib/postgresql/data
       - ./sql:/scripts
@@ -17,3 +18,11 @@ services:
       - ./web:/usr/share/nginx/html
     ports:
       - 80:80
+  app:
+    image: python:3.6
+    volumes:
+      - ./app:/app
+    working_dir: /app
+    command: bash ./app.sh
+    ports:
+      - 8080:8080

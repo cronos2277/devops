@@ -27,6 +27,16 @@ Aqui estamos especificando uma imagem para o serviço `db`, no caso o banco de d
 ##### environment:
 Aqui estamos configurando o postgres, repare que essa marcação está no mesmo escopo que o **image** porém ele contem subatributos. Aqui é configurado o usuário para essa imagem `POSTGRES_USER`, aqui a senha `POSTGRES_PASSWORD`, se for necessário configurar outras coisas segue o link [documentação](https://hub.docker.com/_/postgres), lembrando que a configuração de usuário e senha se tornou obrigatório recentemente, quando for usar o Postgres para isso.
 
+### PGDATA
+    db:
+    image: postgres:9.6
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123456 
+      PGDATA: /tmp            
+
+No se faz necessário colocar o `PGDATA: /tmp` para que funcione no docker do windows, isso ocorre porque o docker usa o tmp do sistema operacional e como o sistema não tem esse diretório, logo isso ocasiona problema em ambiente windows, por isso essa propriedade é interessante.
+
 ## Exemplo com Volumes
     version: '3'
     volumes:
