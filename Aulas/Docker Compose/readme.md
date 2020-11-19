@@ -63,3 +63,36 @@ Uma vez definido um volume, você pode usa-lo dentro de seu serviço, como abaix
 
 #### Mapeamento de volumes
 No caso o mapeamento é sempre feito da seguinte forma `path_host`:`path_serviço`, sempre com o host na esquerda e o serviço a direita, no caso tudo que estiver no diretório de host será copiado para o diretório mapeado com o serviço, por exemplo: `- ./sql:/scripts`, ou seja tudo que estiver dentro da pasta **sql** será copiado para a pasta **scripts** do serviço, quando o mesmo for iniciado.
+
+### Porta
+    version: '3'
+    volumes:
+        dados:
+    services:
+    db:
+        image: postgres:9.6
+        environment:
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: 123456
+        volumes:      
+          - dados:/var/lib/postgresql/data
+          - ./sql:/scripts
+          - ./sql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    frontend:
+        image: nginx:1.13
+        volumes:
+          - ./web:/usr/share/nginx/html
+        ports:
+          - 80:80
+
+### Explicando
+Como pode-se perceber tem um segundo serviço agora que no caso é o front-end:
+
+    frontend:
+        image: nginx:1.13
+        volumes:
+            - ./web:/usr/share/nginx/html
+        ports:
+            - 80:80
+
+Nesse exemplo foi especificado uma versão de maneira fixa, no caso `nginx:1.13`, foi mapeado a pasta web a pasta html do container e além disso especificado uma porta, lembrando sempre que a esquerda está a porta do hospedeiro e a direita a do container, no caso a porta **80** da maquina mapeada a porta **80** do container. Seja para mapeamento de volume, ou porta como é o caso, sempre a esquerda dos dois pontos se refere a maquina e a parte direita a parte referente ao container, no caso a porta 80 da maquina mapeada para a porta 80 do container. Além disso qualquer alteração na pasta web, caso o container rode no modo deamon, será imediatamente percebido.
