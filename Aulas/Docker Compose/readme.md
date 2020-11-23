@@ -248,3 +248,99 @@ Toda vez que for referenciado esse app, será relacionado a esse container acima
 
 ### Mapeando arquivos
 `- ./nginx.conf:/etc/nginx/conf.d/default.conf`, lembre-se sempre de uma coisa a esquerda o arquivo do computador que hospedeiro e a direita o container, nesse caso estamos mapeando o arquivo `nginx.conf` para esse arquivo no container do nginx `/etc/nginx/conf.d/default.conf`.
+
+## Networks
+    version: '3'
+    volumes:
+        dados:
+    networks:
+        banco:
+        web:
+    services:
+        db:
+            image: postgres:9.6
+            environment:
+                POSTGRES_USER: postgres
+                POSTGRES_PASSWORD: 123456 
+                PGDATA: /tmp                 
+            volumes:      
+              - dados:/var/lib/postgresql/data
+              - ./sql:/scripts
+              - ./sql/init.sql:/docker-entrypoint-initdb.d/init.sql
+            networks:
+              - banco
+    frontend:
+        image: nginx:1.13
+        volumes:
+          - ./web:/usr/share/nginx/html
+          - ./nginx.conf:/etc/nginx/conf.d/default.conf
+        ports:
+          - 80:80
+        networks:
+          - web
+        depends_on:
+          - app
+    app:
+        image: python:3.6
+        volumes:
+          - ./app:/app
+        working_dir: /app
+        command: bash ./app.sh   
+        networks:
+          - banco
+          - web
+        depends_on:
+          - db
+
+### Definindo
+    networks:
+        banco:
+        web:
+
+Aqui estamos definindo duas redes, uma chamada **banco** e outra **web**, dessa forma se faz a definição básica, nesse caso está rodando o driver padrão do docker.
+
+#### Rede do db
+    db:
+        image: postgres:9.6
+        environment:
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: 123456 
+            PGDATA: /tmp                 
+        volumes:      
+            - dados:/var/lib/postgresql/data
+            - ./sql:/scripts
+            - ./sql/init.sql:/docker-entrypoint-initdb.d/init.sql
+        networks:
+            - banco
+
+No caso aqui é definido a rede banco, para esse banco de dados.
+
+#### Rede do app
+    frontend:
+    image: nginx:1.13
+        volumes:
+        - ./web:/usr/share/nginx/html
+        - ./nginx.conf:/etc/nginx/conf.d/default.conf
+    ports:
+      - 80:80
+    networks:
+      - web
+    depends_on:
+      - app
+
+Para o frontend estamos definindo a rede **web** e além disso estamos definido um dependencia entre o app e esse container, através do `depends_on`, no caso apenas será executado esse container após executado as suas dependências.
+
+### Rede do 
+    app:
+        image: python:3.6
+        volumes:
+          - ./app:/app
+        working_dir: /app
+        command: bash ./app.sh   
+        networks:
+          - banco
+          - web
+        depends_on:
+          - db
+
+No caso do app ele será executado tanto na rede banco como na rede web, além disso ele depende da execução de db. Através do network você pode definir o escopo do container.
