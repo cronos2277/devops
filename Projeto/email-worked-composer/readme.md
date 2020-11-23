@@ -21,3 +21,6 @@ use o comando `docker-compose down` para que todos os containers em execução s
 
 ## Verificar se tudo está funcionando
 Use o comando `docker-compose exec db psql -U postgres -f ./scripts/check.sql`, assim saberemos se os scripts foram carregados, como tem um volume, esses scripts: **check.sql** e **init.sql** devem estar dentro do container.
+
+## Mais informações
+[Para mais informações, clique aqui](../../Aulas/Docker%20Compose/)

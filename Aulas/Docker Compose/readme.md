@@ -145,3 +145,106 @@ Aqui o diretório de trabalho, ou seja o diretório ao qual irá alimentar o con
 
 ### command
 Aqui você especifica o comando a ser executado, lembrando que ele executa um comando de uma working_dir definida, logo esse trabalha em conjunto com a working dir, no caso foi carregado a pasta app como working_dir e dentro desta pasta executado o arquivo de script.
+
+## Proxy Reverso
+    version: '3'
+    volumes:
+        dados:
+    services:
+        db:
+            image: postgres:9.6
+            environment:
+                POSTGRES_USER: postgres
+                POSTGRES_PASSWORD: 123456 
+                PGDATA: /tmp                 
+            volumes:      
+              - dados:/var/lib/postgresql/data
+              - ./sql:/scripts
+              - ./sql/init.sql:/docker-entrypoint-initdb.d/init.sql
+        frontend:
+            image: nginx:1.13
+            volumes:
+              - ./web:/usr/share/nginx/html
+              - ./nginx.conf:/etc/nginx/conf.d/default.conf
+            ports:
+            - 80:80
+        app:
+            image: python:3.6
+            volumes:
+              - ./app:/app
+            working_dir: /app
+            command: bash ./app.sh   
+
+### Explicando
+Repare no seguinte: foi removido essa linha ao final do arquivo:
+
+    ports:
+          - 8080:8080
+
+e adicionado essa: `- ./nginx.conf:/etc/nginx/conf.d/default.conf`, nesse caso ao invés de expor a porta 8080 para público isso foi delegado para o nginx por meio do proxy reverso, através desse arquivo: 
+#### nginx
+    server {
+        listen 80;
+        server_name localhost;
+
+        location / {
+            root /usr/share/nginx/html;
+            index index.html index.htm;
+        }
+
+        error_page 500 502 503 504 /50x.html;
+        location = /50x.html {
+            root /usr/share/nginx/html;
+        }
+
+        location /api {
+            proxy_pass http://app:8080/;
+            proxy_http_version 1.1;
+        }
+    }
+
+#### Server
+    server {
+            listen 80;
+            server_name localhost;
+
+Aqui é configurado a porta e o Ip ao qual o nginx vai ouvir.
+
+#### Location /
+    location / {
+                root /usr/share/nginx/html;
+                index index.html index.htm;
+            }
+
+Configuração de rotas, tipo aonde esta o arquivo de index, ou seja quando for digitado a **"/"** qual arquivo e em qual path deve ser carregado?
+
+#### Error page
+     error_page 500 502 503 504 /50x.html;
+        location = /50x.html {
+            root /usr/share/nginx/html;
+        }
+
+Em caso de erro da familia 500, qual arquivo e path o nginx deve carregar?
+
+#### /api
+    location /api {
+            proxy_pass http://app:8080/;
+            proxy_http_version 1.1;
+        }
+
+Aqui estamos tratando uma rota específica, a rota API no caso, ou seja o font vai mandar uma requisição para essa url e aqui será definido isso, `proxy_http_version 1.1;` aqui indicamos a versão do HTTP que estamos usando.
+
+##### proxy_pass http://app:8080/;
+A primeira coisa que precisamos saber sobre containers, é que eles possuem um IP e podemos referenciar eles pelo nome, no caso esse app desse arquivo de configuração do NGINX, será interpretado pelo docker nesse container abaixo, que pode ser visto na integra aqui: [docker-compose.yml](#proxy-reverso):
+
+    app:
+        image: python:3.6
+        volumes:
+              - ./app:/app
+        working_dir: /app
+        command: bash ./app.sh   
+
+Toda vez que for referenciado esse app, será relacionado a esse container acima.
+
+### Mapeando arquivos
+`- ./nginx.conf:/etc/nginx/conf.d/default.conf`, lembre-se sempre de uma coisa a esquerda o arquivo do computador que hospedeiro e a direita o container, nesse caso estamos mapeando o arquivo `nginx.conf` para esse arquivo no container do nginx `/etc/nginx/conf.d/default.conf`.
