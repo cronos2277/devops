@@ -10,7 +10,10 @@
                 POSTGRES_PASSWORD: 123456
 
 ### Começando a explicação        
-Sempre em toda e qualquer situação o arquivo deve se chamar `docker-compose.yml` do contrário não funcionará, uma vez que você esteja no diretório desse arquivo, você pode dar o comando `docker compose up` para subir, no caso recomenda-se rodar no modo **deamon**, caso queira que o container rode em background, usando a flag **-d**: `docker compose up -d`. Você pode parar a execução usando o comando `docker compose down`, lembre que é **compose** e não **composer**, além disso você pode usar a flag `-v` no comando `down`, caso queira excluir qualquer resquicio de execução, ficando: `docker compose down -v`. Outro detalhe, identação importa, ou seja os tabs indicam o escopo do bloco, assim como funciona no Python, isso é um padrão do YAML. Você também pode checar o log se precisar após executar a aplicação em modo daemon, usando `docker-compose logs -f -t`.
+Sempre em toda e qualquer situação o arquivo deve se chamar `docker-compose.yml` do contrário não funcionará, uma vez que você esteja no diretório desse arquivo, você pode dar o comando `docker compose up` para subir, no caso recomenda-se rodar no modo **deamon**, caso queira que o container rode em background, usando a flag **-d**: `docker compose up -d`. Você pode parar a execução usando o comando `docker compose down`, lembre que é **compose** e não **composer**, além disso você pode usar a flag `-v` no comando `down`, caso queira excluir qualquer resquicio de execução, ficando: `docker compose down -v`. Outro detalhe, identação importa, ou seja os tabs indicam o escopo do bloco, assim como funciona no Python, isso é um padrão do YAML. Você também pode checar o log se precisar após executar a aplicação em modo daemon, usando `docker-compose logs -f -t` ou `docker-compose logs -f -t [serviço]`, no caso substituindo `[serviço]`, pelo container correspondente, para se ter o log de apenas um container e de todas as suas instâncias.
+
+### Multiplas instâncias
+Exemplo `$ docker-compose up -d --scale worker=3`, com a flag `--scale`**nome_do_servico**=*Quantas_instancias*, você consegue escalar o serviço, nesse caso o worker vai virar 3 containers ao invés de um, dessa forma você escala container no docker, ou seja se você precisa que uma determinada imagem se torne mais de um container você usa o `--scale`.
 
 #### version
 Aqui especificamos a versão do compose, no caso do exeplo é usado a versão 3: `version: '3'` esse atributo é obrigatório e informa como o docker deve interpretar esse arquivo e a versão, apesar de ser um número deve ser informado usando o padrão estabelecido para Strings.
@@ -344,3 +347,83 @@ Para o frontend estamos definindo a rede **web** e além disso estamos definido 
           - db
 
 No caso do app ele será executado tanto na rede banco como na rede web, além disso ele depende da execução de db. Através do network você pode definir o escopo do container.
+
+## Compondo imagem
+
+    version: '3'
+    volumes:
+        dados:
+    networks:
+        banco:
+        web:
+        fila:
+    services:
+        db:
+            image: postgres:9.6
+            environment:
+                POSTGRES_USER: postgres
+                POSTGRES_PASSWORD: 123456 
+                PGDATA: /tmp                 
+            volumes:      
+              - dados:/var/lib/postgresql/data
+              - ./sql:/scripts
+              - ./sql/init.sql:/docker-entrypoint-initdb.d/init.sql
+            networks:
+              - banco
+    frontend:
+        image: nginx:1.13
+        volumes:
+          - ./web:/usr/share/nginx/html
+          - ./nginx.conf:/etc/nginx/conf.d/default.conf
+        ports:
+          - 80:80
+        networks:
+         - web
+        depends_on:
+          - app
+    app:
+        image: python:3.6
+        volumes:
+          - ./app:/app
+        working_dir: /app
+        command: bash ./app.sh   
+        networks:
+          - banco
+          - web
+          - fila
+        depends_on:
+          - db
+          - queue
+    queue:
+        image: redis:3.2
+        networks:
+          - fila
+    worker:
+        build: worker
+        volumes:
+          - ./worker:/worker
+        working_dir: /worker
+        command: worker.py
+        networks:
+          - fila
+        depends_on:
+          - queue
+
+### Criando apartir de uma build
+    worker:
+        build: worker
+        volumes:
+          - ./worker:/worker
+        working_dir: /worker
+        command: worker.py
+        networks:
+          - fila
+        depends_on:
+          - queue
+
+#### build
+Aqui `build: worker` estamos criando um container não com base em uma imagem pronta e sim com base em uma imagem customizável, e esse work aponta para o diretório que contem o `Dockerfile`,
+no caso esse work faz referencia a um diretório, sendo esse aqui: [Diretório worker, aonde está o "Dockerfile"](../../Projeto/email-worked-composer/worker/), [arquivo "Dockerfile"](../../Projeto/email-worked-composer/worker/Dockerfile)
+
+#### Command diferenciado
+No caso esse command está apontando para um arquivo diferente e não para o bash conforme o command acima, isso ocorre porque a [imagem customizável](../../Projeto/email-worked-composer/worker/Dockerfile), já chama o bash, não sendo necessário chamar ali. Repare que mesmo assim se faz necessário ter um **working_dir**.
