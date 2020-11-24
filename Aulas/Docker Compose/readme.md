@@ -1,5 +1,6 @@
 # Docker Composer
 ## Exemplo básico
+[Arquivo docker-composer.yml explicado aqui](../../Projeto/email-worked-composer/docker-compose.yml)
 ### Exemplo básico de um docker-compose.yml
     version: '3'
     services:
@@ -427,3 +428,91 @@ no caso esse work faz referencia a um diretório, sendo esse aqui: [Diretório w
 
 #### Command diferenciado
 No caso esse command está apontando para um arquivo diferente e não para o bash conforme o command acima, isso ocorre porque a [imagem customizável](../../Projeto/email-worked-composer/worker/Dockerfile), já chama o bash, não sendo necessário chamar ali. Repare que mesmo assim se faz necessário ter um **working_dir**.
+
+## Variáveis de ambiente
+
+    version: '3'
+    volumes:
+      dados:
+    networks:
+      banco:
+      web:
+      fila:
+    services:
+      db:
+        image: postgres:9.6
+        environment:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: 123456 
+          PGDATA: /tmp                 
+        volumes:      
+          - dados:/var/lib/postgresql/data
+          - ./sql:/scripts
+          - ./sql/init.sql:/docker-entrypoint-initdb.d/init.sql
+        networks:
+          - banco
+      frontend:
+        image: nginx:1.13
+        volumes:
+          - ./web:/usr/share/nginx/html
+          - ./nginx.conf:/etc/nginx/conf.d/default.conf
+        ports:
+          - 80:80
+        networks:
+          - web
+        depends_on:
+          - app
+      app:
+        image: python:3.6
+        volumes:
+          - ./app:/app
+        working_dir: /app
+        command: bash ./app.sh   
+        networks:
+          - banco
+          - web
+          - fila
+        depends_on:
+          - db
+          - queue
+        environment:      
+          - REDIS_HOST=queue
+          - DB_HOST=db
+          - DB_NAME=envios
+          - DB_USER=postgres
+          - DB_PASSWORD=123456
+      queue:
+        image: redis:3.2
+        networks:
+          - fila
+      worker:
+        build: worker
+        volumes:
+          - ./worker:/worker
+        working_dir: /worker
+        command: worker.py
+        networks:
+          - fila
+        depends_on:
+          - queue
+
+### Explicando as variáveis de ambiente:
+    environment:      
+      - REDIS_HOST=queue
+      - DB_HOST=db
+      - DB_NAME=envios
+      - DB_USER=postgres
+      - DB_PASSWORD=123456
+
+Esse recurso permite a comunicação externa entre o docker-composer e o container. No caso essa variavel corresponde a esses trechos no codigo python: [arquivo python](../../Projeto/email-worked-composer/app/sender.py)
+#### Python
+        redis_host = os.getenv('REDIS_HOST','queue')
+        self.fila = redis.StrictRedis(host=redis_host, port=6379, db=0)
+        db_host = os.getenv('DB_HOST','db')
+        db_user = os.getenv('DB_USER','postgres')
+        db_name = os.getenv('DB_NAME','envios')
+        db_password = os.getenv('DB_PASSWORD','123456')
+        dsn = f'dbname={db_name} user={db_user} password={db_password} host={db_host}'        
+        self.conn = psycopg2.connect(dsn)
+
+No caso as variaveis definidas no `environment` pode ser acessada através do metodo `os.getenv`, que necessita da importação do `os` no python para funcionar, veja para entender [arquivo python](../../Projeto/email-worked-composer/app/sender.py).
